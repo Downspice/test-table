@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+
+td,
+th {
+    white-space: nowrap;
+    border-color: transparent;
+    border-bottom-color: var(--tui-base-04);
+    border-top-color:var(--tui-base-04);
+}
+
+th{
+  background-color: #94A2AA;
+  color: #000;
+  font-family: sans-serif ;
+  font-size:small;
+}
+
+// .pageHeader{
+//   color: rgba(210, 149, 57, 0.83);
+// }
+
+// .buttonBg{
+//   background-color: rgba(147, 161, 169, 0.6);
+
+// }
+
+

@@ -1,0 +1,116 @@
+<div class="flex gap-5 items-center">
+  @if(canSearch) { @defer {
+  <tui-input
+    tuiTextfieldSize="m"
+    tuiTextfieldIconLeft="tuiIconSearch"
+    class="flex-1"
+    [tuiTextfieldCleaner]="true"
+    [formControl]="searchFormCtrl"
+  >
+    Search
+    <input placeholder="Search" tuiTextfield />
+  </tui-input>
+  <div class="w-1/3"></div>
+  } } @else {
+  <div class="flex-1"></div>
+  } @if(addActionButton) { @defer{
+  <button
+    appearance="primary"
+    tuiButton
+    type="button"
+    size="m"
+    [iconRight]="addIcon"
+    (click)="add.emit({ action: 'add', data: $any({}) })"
+  >
+    {{ addButtonLabel }}
+  </button>
+  } }
+</div>
+
+<div class="h-4"></div>
+<tui-loader [showLoader]="loading" [overlay]="true">
+  <ng-container *ngIf="data() as data">
+    <div class="border rounded-lg shadow" *ngIf="data.length > 0">
+      <div class="flex" *tuiLet="sortData() as sortD">
+        <table
+          tuiTable
+          class="flex-1"
+          [columns]="columns"
+          [direction]="sortD.direction || 1"
+          [tuiSortBy]="sortD.name || null"
+          (directionChange)="sortDir$.next($event)"
+          (tuiSortByChange)="sortBy$.next($any($event!))"
+        >
+          <thead>
+            <tr tuiThGroup>
+              @for(item of columns; track item; let i = $index) { @if(item ===
+              'actions'){
+              <th tuiTh *tuiHead="item" [sorter]="null" [resizable]="true">
+                {{ columnHeaders[i] }}
+              </th>
+              } @else {
+              <th tuiTh *tuiHead="item" tuiSortable [resizable]="true">
+                {{ columnHeaders[i] }}
+              </th>
+              } }
+            </tr>
+          </thead>
+          <tbody
+            *tuiLet="$any(data) | tuiTableSort as sortedData"
+            tuiTbody
+            [data]="sortedData"
+          >
+            @for(item of sortedData; track $any(item).id; let i = $index) {
+            <tr tuiTr>
+              @if(hasIndex()) {
+              <td *tuiCell="'index'" tuiTd class="!w-3">
+                {{ i + 1 }}
+              </td>
+              } @for (k of keyColumns; track k) {
+              <td *tuiCell="k" tuiTd>
+                {{ $any(item)?.[k] }}
+              </td>
+              } @if(hasActions()) {
+              <td *tuiCell="'actions'" tuiTd class="!w-10">
+                <div class="flex justify-end">
+                  @if(editActionButton) {
+                  <tui-svg
+                    (click)="editDelete.emit({ action: 'edit', data: $any(item) })"
+                    [src]="editIcon"
+                    class="text-[#1C90D1] cursor-pointer"
+                  ></tui-svg>
+                  } @if(deleteActionButton) {
+                  <tui-svg
+                    (click)="editDelete.emit({ action: 'delete', data: $any(item) })"
+                    [src]="deleteIcon"
+                    class="text-[#FF0000] cursor-pointer"
+                  ></tui-svg>
+                  }
+                </div>
+              </td>
+              }
+            </tr>
+            }
+          </tbody>
+          @if(showFooter()) { @defer {
+          <tfoot *tuiLet="paginatedMeta() as meta">
+            <tr>
+              <td [colSpan]="columns.length">
+                <div class="py-3 pl-3">
+                  <tui-table-pagination
+                    class="tui-space_top-2"
+                    [total]="meta?.['total'] ?? 0"
+                    [page]="meta?.['currentPage'] ?? 0"
+                    [size]="meta?.['perPage'] || 1"
+                    (paginationChange)="handelPaginationChange($event)"
+                  ></tui-table-pagination>
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+          } }
+        </table>
+      </div>
+    </div></ng-container
+  >
+</tui-loader>
